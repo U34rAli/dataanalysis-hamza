@@ -4,6 +4,7 @@ import os
 from werkzeug.utils import secure_filename
 import pandas as pd
 import json
+import re
 
 UPLOAD_FOLDER = 'analysis/static/uploads'
 ALLOWED_EXTENSIONS = {'csv'}
@@ -20,14 +21,27 @@ def allowed_file(filename):
 # this route is used to upload file to the server.
 @app.route('/uploadfile', methods=['POST'])
 def upload():
+    error = u'Invalid file format'
     if request.method == 'POST':
         file = request.files['file']
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('display_data',
-                                    filename=filename))
-    flash(u'Invalid file format', 'error')
+
+            x = re.findall("^[a-zA-Z]", filename)
+            if x:
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                try:
+                    df = pd.read_csv(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                    if len(df) > 0:
+                        return redirect(url_for('display_data',
+                                        filename=filename))
+                    else:
+                        error = 'File must containe some records'
+                except Exception as e:
+                    error = 'Unable to read file.'
+            else:
+                error = 'Filename dont start with alphabet.' 
+    flash(error, 'error')
     return redirect(url_for('index'))
 
 # this route is used to disply graph between two dates
