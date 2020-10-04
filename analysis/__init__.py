@@ -1,8 +1,9 @@
 from flask import Flask
-from flask import render_template, flash, request, redirect, url_for
+from flask import render_template, flash, request, redirect, url_for, request
 import os
 from werkzeug.utils import secure_filename
-
+import pandas as pd
+import json
 
 UPLOAD_FOLDER = 'analysis/static/uploads'
 ALLOWED_EXTENSIONS = {'csv'}
@@ -27,7 +28,25 @@ def upload():
 
 @app.route('/<filename>')
 def display_data(filename):
-    return render_template('index.html')
+    df = pd.read_csv(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    return render_template('index.html', url_data="/"+filename+"/getdata", columns=df.columns)
+
+@app.route('/<filename>/getdata')
+def get_data(filename):
+    count = 100
+    draw = request.args.get('draw')
+    start = request.args.get('start')
+    df = pd.read_csv(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    
+    start = int(start)*count
+    end = start + count
+    result = df[start:end].to_json(orient="split")
+    
+    parsed = json.loads(result)
+    parsed['draw'] = draw
+    parsed['recordsTotal'] = len(df)
+    parsed['recordsFiltered'] = len(df)
+    return parsed
 
 @app.route('/')
 def index():
