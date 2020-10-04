@@ -1,69 +1,63 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "data.html" %}
 
-<head>
-    <title>Analysis Tool</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+{% block title %}
+Data display
+{%  endblock %}
 
 
-    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+{% block links %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
+{% endblock %}
 
-    <style>
-        th,
-        td {
-            white-space: nowrap;
-        }
+{% block scripts %}
+<script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+{% endblock %}
 
-        div.dataTables_wrapper {
-            width: 1200px;
-            margin: 0 auto;
-        }
+{% block style %}
+<style>
+    th,
+    td {
+        white-space: nowrap;
+    }
+    div.dataTables_wrapper {
+        width: 1000px;
+        margin: 0 auto;
+    }
+    tr {
+        height: 20px;
+    }
+</style>
+{% endblock %}
 
-        tr {
-            height: 20px;
-        }
-    </style>
-
-</head>
-
-<body>
-
-    <div class="container-fluid">
-
-
+{% block content %}
         <section>
-            <div id='myDiv'>
-                <!-- Plotly chart will be drawn inside this DIV -->
-            </div>
-
-        </section>
-
-        <section class="mt-2">
-            <form class="form-group" method="post" action="/uploadfile" enctype="multipart/form-data">
+            <form method="GET" action="{{ graph }}">
                 <div class="row">
 
-                    <div class="col-6">
-                        <div class="custom-file">
-                            <input type="file" name="file" class="custom-file-input" id="customFile">
-                            <label class="custom-file-label" for="customFile">Choose file</label>
+                    <div class="col-sm-3 mx-auto">
+                        <div class="form-group">
+                            <label>Start date</label>
+                            <input type="date" name="startdate" value="2013-01-07" max="3000-12-31" min="1000-01-01"
+                                class="form-control">
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Upload</button>
+                    <div class="col-sm-3 mx-auto">
+                        <div class="form-group">
+                            <label>End date</label>
+                            <input type="date" name="enddate" value="2013-02-07" min="1000-01-01" max="3000-12-31"
+                                class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-sm-1 mx-auto my-auto">
+                        <button type="submit" class="btn btn-primary">Graph</button>
+                    </div>
                 </div>
 
             </form>
 
         </section>
-        <section class="mt-5">
+
+        <section class="mt-2">
             <table id="example" class="display" style="width:100%">
                 <thead>
                     <tr>
@@ -74,25 +68,19 @@
                     </tr>
                 </thead>
                 <tbody>
-
                 </tbody>
-                <tfoot>
-                    <tr>
-                        {% for column in columns %}
-                        <th class="">{{ column }}
-                        </th>
-                        {% endfor %}
-                    </tr>
-                </tfoot>
             </table>
         </section>
     </div>
 
+    {% endblock %}
 
+
+    {% block js %}
     <script>
         $(document).ready(function () {
             var table = $('#example').DataTable({
-                "scrollY": 400,
+                "scrollY": 350,
                 "scrollX": true,
                 "processing": true,
                 "serverSide": true,
@@ -105,19 +93,9 @@
             });
         });
 
-
-        var data = [
-            {
-                x: ['giraffes', 'orangutans', 'monkeys'],
-                y: [20, 14, 23],
-                type: 'bar'
-            }
-        ];
-
-        // Plotly.newPlot('myDiv', data);
-
     </script>
 
-</body>
+    {% endblock %}
 
-</html>
+    
+

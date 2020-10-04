@@ -1,0 +1,67 @@
+{% extends "data.html" %}
+
+{% block title %}
+Date view
+{%  endblock %}
+
+
+{% block scripts %}
+<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+{% endblock %}
+   
+{% block content %}
+   
+   <div class="jumbotron text-center pt-2 pb-1">
+        <h3>Graph between following date</h1>
+            <p>From <b>{{ startdate }}</b> to <b>{{ enddate }}</b></p>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div id='myDiv'>
+                    <!-- Plotly chart will be drawn inside this DIV -->
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+
+    {% endblock %}
+
+    {% block js %}
+
+    <script>
+        var dates = {{ dates | tojson }};
+        var counts = {{ counts | tojson }};
+        var data = [
+            {
+                x: dates,
+                y: counts,
+                type: 'bar'
+            }
+        ];
+
+        var layout = {
+            title: 'Graph visualization',
+            xaxis: {
+                title: 'Time duration',
+            },
+            yaxis: {
+                title: 'Average Accidents per hour a day',
+                
+            },
+            legend: {
+                x: 0,
+                y: 1.0,
+                bgcolor: 'rgba(255, 255, 255, 0)',
+                bordercolor: 'rgba(255, 255, 255, 0)'
+            },
+           
+        };
+
+        Plotly.newPlot('myDiv', data, layout);
+    </script>
+
+{% endblock %}

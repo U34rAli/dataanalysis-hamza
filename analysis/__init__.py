@@ -25,11 +25,33 @@ def upload():
             return redirect(url_for('display_data',
                                     filename=filename))
 
+@app.route('/<filename>/displaygraph')
+def display_graph(filename):
+    df = pd.read_csv(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    start_date = request.args.get('startdate')
+    end_date = request.args.get('enddate')
+    
+    
+    df['ACCIDENT_DATE'] = pd.to_datetime(df['ACCIDENT_DATE'])  
+    mask = (df['ACCIDENT_DATE'] > start_date) & (df['ACCIDENT_DATE'] <= end_date)
+    newdf = df.loc[mask]
+    uni = newdf['ACCIDENT_DATE'].value_counts().rename_axis('days').reset_index(name='counts')
+    uni = uni.sort_values(by='days')
+
+    dates = uni['days']
+    dates = dates.apply(lambda x: x.strftime('%Y-%m-%d'))
+    dates = dates.tolist()
+
+    counts = (uni['counts']/24).tolist()
+    
+    return render_template('dategraph.html', dates=dates, counts=counts, startdate=start_date, enddate=end_date)
+
 
 @app.route('/<filename>')
 def display_data(filename):
     df = pd.read_csv(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    return render_template('index.html', url_data="/"+filename+"/getdata", columns=df.columns)
+    return render_template('index.html', url_data="/"+filename+"/getdata",
+        graph=f"/{filename}/displaygraph", columns=df.columns)
 
 @app.route('/<filename>/getdata')
 def get_data(filename):
@@ -37,11 +59,7 @@ def get_data(filename):
     draw = request.args.get('draw')
     start = request.args.get('start')
     df = pd.read_csv(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    
-    
-    
     print(f"----------------\n\n-------{start}-----\n\n-----------------\n")
-
     start = int(start)
     end = start + count
     result = df[start:end].to_json(orient="split")
@@ -54,4 +72,4 @@ def get_data(filename):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('upload.html')

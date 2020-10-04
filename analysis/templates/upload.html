@@ -1,0 +1,22 @@
+{% extends "data.html" %}
+
+{% block title %}
+Upoad file
+{% endblock %}
+
+{% block content %}
+<section class="mt-2">
+    <form class="form-group" method="post" action="/uploadfile" enctype="multipart/form-data">
+        <div class="row">
+
+            <div class="col-6">
+                <div class="custom-file">
+                    <input type="file" name="file" class="custom-file-input" id="customFile">
+                    <label class="custom-file-label" for="customFile">Choose file</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </div>
+    </form>
+</section>
+{% endblock %}
