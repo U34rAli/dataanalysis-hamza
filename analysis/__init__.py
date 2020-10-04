@@ -27,6 +27,8 @@ def upload():
             return redirect(url_for('display_data',
                                     filename=filename))
 
+    return redirect(url_for('index'))
+
 # this route is used to disply graph between two dates
 @app.route('/<filename>/displaygraph')
 def display_graph(filename):
@@ -111,11 +113,8 @@ def get_data(filename):
     start = request.args.get('start')
     search = request.args.get('search[value]')
 
-    print(f"\n\n--------------------{start_date}---------------------\n\n")
-
     df = pd.read_csv(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    df = get_date_between(df, start_date, end_date)
-    
+    df = get_date_between(df, start_date, end_date)    
 
     if len(search) != 0:
         df = df[df['DCA_CODE'].str.contains(search, case=False)]
