@@ -19,10 +19,12 @@ Data display
     td {
         white-space: nowrap;
     }
+
     div.dataTables_wrapper {
         width: 1000px;
         margin: 0 auto;
     }
+
     tr {
         height: 20px;
     }
@@ -30,72 +32,81 @@ Data display
 {% endblock %}
 
 {% block content %}
-        <section>
-            <form method="GET" action="{{ graph }}">
-                <div class="row">
+<section>
+    <form method="GET" action="{{ graph }}">
+        <div class="row">
 
-                    <div class="col-sm-3 mx-auto">
-                        <div class="form-group">
-                            <label>Start date</label>
-                            <input type="date" name="startdate" value="2013-01-07" max="3000-12-31" min="1000-01-01"
-                                class="form-control">
-                        </div>
-                    </div>
-                    <div class="col-sm-3 mx-auto">
-                        <div class="form-group">
-                            <label>End date</label>
-                            <input type="date" name="enddate" value="2013-02-07" min="1000-01-01" max="3000-12-31"
-                                class="form-control">
-                        </div>
-                    </div>
-                    <div class="col-sm-1 mx-auto my-auto">
-                        <button type="submit" class="btn btn-primary">Graph</button>
-                    </div>
+            <div class="col-sm-3 mx-auto">
+                <div class="form-group">
+                    <label>Start date</label>
+                    <input type="date" id="startdate" name="startdate" value="2013-01-07" max="3000-12-31"
+                        min="1000-01-01" class="form-control">
                 </div>
+            </div>
+            <div class="col-sm-3 mx-auto">
+                <div class="form-group">
+                    <label>End date</label>
+                    <input type="date" id="enddate" name="enddate" value="2013-02-07" min="1000-01-01" max="3000-12-31"
+                        class="form-control">
+                </div>
+            </div>
+            <div class="col-sm-1 mx-auto my-auto">
+                <button type="submit" class="btn btn-primary">Graph</button>
+            </div>
+        </div>
 
-            </form>
+    </form>
 
-        </section>
+</section>
 
-        <section class="mt-2">
-            <table id="example" class="display" style="width:100%">
-                <thead>
-                    <tr>
-                        {% for column in columns %}
-                        <th class="">{{ column }}
-                        </th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </section>
-    </div>
+<section class="mt-2">
+    <table id="example" class="display" style="width:100%">
+        <thead>
+            <tr>
+                {% for column in columns %}
+                <th class="">{{ column }}
+                </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</section>
+</div>
 
-    {% endblock %}
+{% endblock %}
 
 
-    {% block js %}
-    <script>
-        $(document).ready(function () {
-            var table = $('#example').DataTable({
-                "scrollY": 350,
-                "scrollX": true,
-                "processing": true,
-                "serverSide": true,
-                "pageLength": 100,
-                "ajax": {
-                    "url": "{{ url_data }}",
-                    "data": function (d) {
-                    }
+{% block js %}
+<script>
+    $(document).ready(function () {
+        var table = $('#example').DataTable({
+            "scrollY": 350,
+            "scrollX": true,
+            "processing": true,
+            "serverSide": true,
+            "pageLength": 100,
+            "ajax": {
+                "url": "{{ url_data }}",
+                "data": function ( d ) {
+                    d.startdate = $('#startdate').val();
+                    d.enddate = $('#enddate').val();
                 }
-            });
+            }
         });
 
-    </script>
+        $('#startdate').change(function () {
+            table.ajax.reload();
+        });
 
-    {% endblock %}
+        $('#enddate').change(function () {
+            table.ajax.reload();
+        });
 
-    
 
+    });
+
+</script>
+
+{% endblock %}

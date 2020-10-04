@@ -1,0 +1,102 @@
+{% extends "data.html" %}
+
+{% block title %}
+Speedzone
+{%  endblock %}
+
+
+{% block scripts %}
+<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="jumbotron text-center pt-1 pb-1">
+        <h3>Graph between following date</h1>
+            <p>X-axis <b> Speed Range </b> By <b>Year {{ year }}</b></p>
+    </div>
+
+    <form method="GET" action="{{url_for('speezone', filename=filename)}}">
+        <div class="row align-items-end">
+
+            <div class="col-3">
+                <label for="speedzone">Select column:</label>
+                <select name="speedzone" class="form-control" id="speedzone" value="{{ speedzone }}">
+                    <!-- {% for column in columns %}
+                    <option value="{{ column}}">{{ column }}</option>
+                    {% endfor %} -->
+                    <option>Speed Zone</option>
+                </select>
+            </div>
+            <div class="col-3">
+                <label for="year">Year:</label>
+                <select name="year" class="form-control" id="year" value="{{ year }}">
+                    {% for column in years %}
+                    <option value="{{ column}}">{{ column }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-sm-1 my-auto">
+                <label for="sel2"></label>
+                <button class="btn btn-primary my-auto" type="submit">Update</button>
+
+            </div>
+        </div>
+    </form>
+
+
+    <div class="row">
+        <div class="col">
+            <div id='myDiv'>
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block js %}
+
+<script>
+    var dates = {{ trends | tojson }};
+    var counts = {{ counts | tojson }};
+    var data = [
+        {
+            x: dates,
+            y: counts,
+            type: 'bar'
+        }
+    ];
+
+    var layout = {
+        title: 'Graph visualization',
+        xaxis: {
+            title: 'Trends',
+        },
+        yaxis: {
+            title: 'Total Accidents',
+
+        },
+        legend: {
+            x: 0,
+            y: 1.0,
+            bgcolor: 'rgba(255, 255, 255, 0)',
+            bordercolor: 'rgba(255, 255, 255, 0)'
+        },
+
+    };
+
+    Plotly.newPlot('myDiv', data, layout);
+
+
+    $(function () {
+        $("#year").val("{{ year }}");
+    });
+</script>
+
+{% endblock %}
