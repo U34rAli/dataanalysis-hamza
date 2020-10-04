@@ -38,10 +38,14 @@ def get_data(filename):
     start = request.args.get('start')
     df = pd.read_csv(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     
-    start = int(start)*count
+    
+    
+    print(f"----------------\n\n-------{start}-----\n\n-----------------\n")
+
+    start = int(start)
     end = start + count
     result = df[start:end].to_json(orient="split")
-    
+
     parsed = json.loads(result)
     parsed['draw'] = draw
     parsed['recordsTotal'] = len(df)
