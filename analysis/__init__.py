@@ -10,6 +10,7 @@ ALLOWED_EXTENSIONS = {'csv'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]]/'
 
 # function used for restirct the upload file types.
 def allowed_file(filename):
@@ -26,7 +27,7 @@ def upload():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             return redirect(url_for('display_data',
                                     filename=filename))
-
+    flash(u'Invalid file format', 'error')
     return redirect(url_for('index'))
 
 # this route is used to disply graph between two dates
